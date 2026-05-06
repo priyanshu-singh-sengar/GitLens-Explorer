@@ -134,7 +134,7 @@ Explain:
   console.log("🧠 Prompt preview:", prompt.slice(0, 200));
 
   try {
-    const result = await withTimeout(callAI(prompt), 65000); 
+    const result = await withTimeout(callAI(prompt), 120000); 
 
     if (!result) throw new Error("Empty AI response");
 
@@ -173,7 +173,7 @@ Explain:
 3. How it fits in project`;
 
   try {
-    const result = await withTimeout(callAI(prompt), 65000); 
+    const result = await withTimeout(callAI(prompt), 120000); 
 
     if (!result) throw new Error("Empty AI response");
 
