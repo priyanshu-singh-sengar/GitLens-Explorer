@@ -3,8 +3,6 @@ const axios = require("axios");
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 
-const API_KEY = process.env.GEMINI_API_KEY;
-
 // -------------------------
 // TIMEOUT WRAPPER
 // -------------------------
@@ -25,6 +23,7 @@ function withTimeout(promise, ms) {
 // GEMINI CALL
 // -------------------------
 async function callGemini(prompt) {
+  const API_KEY = process.env.GEMINI_API_KEY;
 
   console.log("📡 Sending request to Gemini...");
   console.log("🔑 API KEY:", API_KEY ? "FOUND" : "MISSING");
@@ -48,7 +47,7 @@ async function callGemini(prompt) {
         headers: {
           "Content-Type": "application/json"
         },
-        timeout: 15000
+        timeout: 60000 // 60 seconds
       }
     );
 
@@ -111,7 +110,7 @@ Explain:
 
   try {
 
-    const result = await withTimeout(callGemini(prompt), 15000);
+    const result = await withTimeout(callGemini(prompt), 60000); // Increased from 15s to 60s
 
     if (!result) {
       throw new Error("Empty AI response");
@@ -156,7 +155,7 @@ Explain:
 
   try {
 
-    const result = await withTimeout(callGemini(prompt), 15000);
+    const result = await withTimeout(callGemini(prompt), 60000); // Increased from 15s to 60s
 
     if (!result) {
       throw new Error("Empty AI response");
