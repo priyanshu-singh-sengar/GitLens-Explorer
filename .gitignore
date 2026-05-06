@@ -6,3 +6,7 @@ dist/
 build/
 .DS_Store
 context.txt
+deployment_guide.md
+artifacts/
+scratch/
+*.log

@@ -1,3 +1,0 @@
-also still console logs have some errors
-and please keep earlier format, left for file structure, middle for code and right for sumary unlike now
-also add something below the middle code viewer part it looks empty something like a space to ask questions to the ai api key thing, and whatever file or folder is currently open we can ask stuff related to that from the ai
