@@ -81,3 +81,12 @@ export async function fetchRawFile(owner, repo, commitSha, path) {
   if (!res.ok) throw new Error(`Could not fetch file: ${path}`);
   return res.text();
 }
+
+export async function sendChatMessage(owner, repo, path, chatHistory) {
+  const res = await fetch(`${BASE_URL}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ owner, repo, path, chatHistory })
+  });
+  return handleResponse(res);
+}

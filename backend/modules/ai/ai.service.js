@@ -105,12 +105,31 @@ async function callDeepSeek(prompt) {
 // AI ORCHESTRATOR
 // -------------------------
 async function callAI(prompt) {
-  try {
-    return await callGemini(prompt);
-  } catch (err) {
-    console.log("⚠️ Gemini failed or exhausted. Falling back to DeepSeek...");
-    return await callDeepSeek(prompt);
+  const MAX_RETRIES = 2;
+  let lastErr = null;
+
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    try {
+      return await callGemini(prompt);
+    } catch (err) {
+      lastErr = err;
+      console.log(`⚠️ Gemini attempt ${i + 1} failed: ${err.message}. Trying DeepSeek...`);
+      
+      try {
+        return await callDeepSeek(prompt);
+      } catch (dsErr) {
+        lastErr = dsErr;
+        console.log(`⚠️ DeepSeek attempt ${i + 1} failed: ${dsErr.message}`);
+      }
+    }
+    
+    if (i < MAX_RETRIES - 1) {
+      console.log(`⏳ Waiting 2 seconds before retry...`);
+      await new Promise(res => setTimeout(res, 2000));
+    }
   }
+
+  throw new Error(`All AI models failed. Last error: ${lastErr?.message}`);
 }
 
 // -------------------------
@@ -186,7 +205,44 @@ Explain:
   }
 }
 
+// -------------------------
+// CHAT WITH AI
+// -------------------------
+async function chatWithAI(owner, repo, contextPath, chatHistory, fileContent = null) {
+  console.log("💬 chatWithAI called for:", contextPath);
+
+  let systemPrompt = `You are an expert programming assistant analyzing the GitHub repository ${owner}/${repo}.\n`;
+  if (contextPath) {
+    systemPrompt += `The user is currently asking about the file or folder: ${contextPath}\n`;
+  }
+  if (fileContent) {
+    const truncatedCode = fileContent.substring(0, 8000);
+    systemPrompt += `\nHere is the content of ${contextPath}:\n\n${truncatedCode}\n\n`;
+  }
+
+  // Format chat history into a single string
+  let historyPrompt = "Conversation history:\n";
+  for (const msg of chatHistory) {
+    const role = msg.role === "user" ? "User" : "AI";
+    historyPrompt += `${role}: ${msg.text}\n`;
+  }
+
+  const prompt = `${systemPrompt}\n${historyPrompt}\nAI:`;
+
+  try {
+    const result = await withTimeout(callAI(prompt), 120000);
+    if (!result) throw new Error("Empty AI response");
+    
+    console.log("✅ Chat response generated");
+    return result;
+  } catch (err) {
+    console.error("❌ Chat generation failed:", err.message);
+    throw err;
+  }
+}
+
 module.exports = {
   summarizeRepo,
-  explainCode
+  explainCode,
+  chatWithAI
 };

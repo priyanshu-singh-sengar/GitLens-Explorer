@@ -6,6 +6,7 @@ dist/
 build/
 .DS_Store
 context.txt
+context.json
 deployment_guide.md
 artifacts/
 scratch/

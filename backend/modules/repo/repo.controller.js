@@ -289,3 +289,35 @@ Explain:
     });
   }
 };
+
+// -------------------------
+// CHAT WITH AI
+// -------------------------
+exports.chatWithAI = async (req, res) => {
+  try {
+    const { owner, repo, path, chatHistory } = req.body;
+
+    if (!owner || !repo || !chatHistory) {
+      return res.status(400).json({ error: "owner, repo, and chatHistory are required" });
+    }
+
+    let fileContent = null;
+    
+    // Try to get file content if it's a specific file
+    if (path && path.includes(".")) {
+      try {
+        const commitSha = await repoService.getLatestCommitSha(owner, repo);
+        fileContent = await repoService.fetchFile(owner, repo, commitSha, path);
+      } catch (e) {
+        console.log("Could not fetch file content for chat:", e.message);
+      }
+    }
+
+    const response = await aiService.chatWithAI(owner, repo, path, chatHistory, fileContent);
+    
+    res.json({ response });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

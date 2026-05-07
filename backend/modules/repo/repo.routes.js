@@ -68,4 +68,12 @@ router.get(
   repoController.getFolderExplanation
 );
 
+/*
+  Chat with AI
+*/
+router.post(
+  "/chat",
+  repoController.chatWithAI
+);
+
 module.exports = router;

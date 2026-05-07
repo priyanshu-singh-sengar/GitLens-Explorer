@@ -37,7 +37,7 @@ export default function CodePanel({ tab, onCodeChange }) {
   const lines = (tab.code || "").split("\n").length;
 
   return (
-    <div className="code-panel">
+    <div className="code-panel" style={{ flex: 1 }}>
       {/* Header */}
       <div className="code-panel-header">
         <span className="code-panel-filename">📄 {tab.title}</span>
@@ -70,7 +70,7 @@ export default function CodePanel({ tab, onCodeChange }) {
             fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
             fontLigatures: true,
             lineNumbers: "on",
-            minimap: { enabled: true },
+            minimap: { enabled: false },
             scrollBeyondLastLine: false,
             wordWrap: "off",
             tabSize: 2,
